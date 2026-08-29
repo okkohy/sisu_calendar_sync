@@ -3,9 +3,10 @@ module sisu_calendar_sync
 using HTTP
 using Dates
 
-URL = readline("link.url")
 
-function load()
+
+function load(fp)
+  URL = readline(fp)
   response = HTTP.get(URL)
   body = String(response.body)
   split(body, "\r\n")
@@ -49,7 +50,12 @@ function filter_courses(courses)
     # DTSTART:20260119T121500Z
     # DURATION:PT2H45M\r
     date = DateTime(datestamp[9:21], dateformat"yyyymmddTHHMM")
-    duration = Time(parse(Int, durationtag[12]), parse(Int, durationtag[14:15]))
+    println(durationtag)
+    if length(durationtag) < 14
+        duration = Time(parse(Int, durationtag[12]), 0)
+    else
+        duration = Time(parse(Int, durationtag[12]), parse(Int, durationtag[14:15]))
+    end
     # println(date, " - ", datestamp)
     if date > today()
       push!(summaries, (
@@ -65,8 +71,8 @@ function filter_courses(courses)
   sort(collect(summaries), by=f(x) = x[1])
 end
 
-function main()
-  event_lines = load()
+function main(fp = "link.url")
+  event_lines = load(fp)
   header, courses = get_events(event_lines)
   tail = "END:VCALENDAR"
   event_choices = filter_courses(courses)

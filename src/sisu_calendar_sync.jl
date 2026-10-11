@@ -51,7 +51,7 @@ function filter_courses(courses)
     # DURATION:PT2H45M\r
     date = DateTime(datestamp[9:21], dateformat"yyyymmddTHHMM")
     println(durationtag)
-    if length(durationtag) < 14
+    if length(durationtag) < 15
         duration = Time(parse(Int, durationtag[12]), 0)
     else
         duration = Time(parse(Int, durationtag[12]), parse(Int, durationtag[14:15]))
